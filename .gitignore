@@ -82,6 +82,11 @@ profile_output*
 *.model
 *.pt
 
+# Training outputs
+outputs/
+data/
+logs/
+
 # Agents files, use a symlink to AGENTS.md instead. 
 CLAUDE.md
 QWEN.md

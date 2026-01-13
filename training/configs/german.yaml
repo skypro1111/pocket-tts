@@ -1,0 +1,31 @@
+# Example configuration for training on German data
+
+# Data settings
+data_dir: "data/german"
+metadata_file: "metadata.json"
+languages:
+  - "de"
+
+# Model settings
+config: "pocket_tts/config/b6369a24.yaml"
+freeze_encoder: false
+
+# Training hyperparameters
+batch_size: 4
+num_epochs: 50
+learning_rate: 5.0e-5
+weight_decay: 0.01
+warmup_steps: 500
+gradient_clip: 1.0
+accumulation_steps: 2
+
+# Output settings
+output_dir: "outputs/german_model"
+log_interval: 10
+save_interval: 500
+eval_interval: 500
+
+# Distributed training
+num_workers: 4
+seed: 42
+world_size: 1

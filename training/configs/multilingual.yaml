@@ -1,0 +1,36 @@
+# Example configuration for multilingual training
+
+# Data settings
+data_dir: "data/multilingual"
+metadata_file: "metadata.json"
+languages:
+  - "en"
+  - "fr"
+  - "es"
+  - "de"
+  - "it"
+  - "pt"
+
+# Model settings
+config: "pocket_tts/config/b6369a24.yaml"
+freeze_encoder: false
+
+# Training hyperparameters
+batch_size: 8
+num_epochs: 100
+learning_rate: 1.0e-4
+weight_decay: 0.01
+warmup_steps: 1000
+gradient_clip: 1.0
+accumulation_steps: 4
+
+# Output settings
+output_dir: "outputs/multilingual_model"
+log_interval: 10
+save_interval: 1000
+eval_interval: 1000
+
+# Distributed training
+num_workers: 8
+seed: 42
+world_size: 2  # Use 2 GPUs if available
