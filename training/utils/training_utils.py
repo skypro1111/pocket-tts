@@ -76,7 +76,11 @@ def load_checkpoint(
 
 
 def get_lr(optimizer: torch.optim.Optimizer) -> float:
-    """Get current learning rate from optimizer."""
+    """Get current learning rate from optimizer.
+    
+    Note: Returns the learning rate from the first parameter group.
+    For optimizers with multiple parameter groups, use optimizer.param_groups directly.
+    """
     for param_group in optimizer.param_groups:
         return param_group["lr"]
     return 0.0

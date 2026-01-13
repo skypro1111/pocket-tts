@@ -138,11 +138,13 @@ def compute_loss(model, batch, device):
     
     # Placeholder loss computation
     # TODO: Implement actual flow matching loss
-    loss = torch.tensor(0.0, device=device, requires_grad=True)
+    # Using requires_grad=False since this is a placeholder
+    loss = torch.tensor(0.5, device=device, requires_grad=False)
     
-    logger.warning(
-        "Using placeholder loss! Implement actual flow matching loss for real training."
-    )
+    if batch_idx == 0:  # Log only once per epoch
+        logger.warning(
+            "Using placeholder loss! Implement actual flow matching loss for real training."
+        )
     
     return loss
 
@@ -266,8 +268,7 @@ def main_worker(gpu, args):
     if args.freeze_encoder:
         logger.info("Freezing Mimi encoder")
         for param in model.flow_lm.parameters():
-            if hasattr(param, "requires_grad"):
-                param.requires_grad = False
+            param.requires_grad = False
     
     model = model.to(device)
     
