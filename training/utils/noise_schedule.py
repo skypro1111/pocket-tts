@@ -1,7 +1,7 @@
 """Noise scheduling and augmentation utilities for CALM training.
 
 This module provides utilities for:
-- TrigFlow noise scheduling (αt = cos(t), σt = sin(t))
+- TrigFlow noise scheduling (αt = cos(t·π/2), σt = sin(t·π/2))
 - Noise augmentation for backbone transformer input
 - Gaussian temperature sampling for inference
 """

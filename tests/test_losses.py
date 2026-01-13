@@ -12,13 +12,13 @@ from training.utils.losses import (
     EOSLoss,
     FlowMatchingLoss,
     interpolate_latents,
-    trigflow_schedule,
 )
 from training.utils.noise_schedule import (
     BackboneNoiseAugmentation,
     EMAStatistics,
     GaussianTemperatureSampler,
     add_noise_to_latents,
+    trigflow_schedule,
 )
 
 

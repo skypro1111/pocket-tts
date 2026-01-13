@@ -14,6 +14,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from training.utils.noise_schedule import trigflow_schedule
+
+# Constant for numerical derivative computation in consistency loss
+CONSISTENCY_DERIVATIVE_DELTA = 0.01
+
 
 class AdaptiveWeightFunction(nn.Module):
     """Learnable adaptive weighting function wψ(t) for consistency loss.
@@ -52,25 +57,6 @@ class AdaptiveWeightFunction(nn.Module):
         """
         t_input = t.unsqueeze(-1) if t.dim() == 0 or t.shape[-1] != 1 else t
         return self.mlp(t_input).squeeze(-1)
-
-
-def trigflow_schedule(t: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    """Compute TrigFlow noise schedule coefficients.
-
-    Following the TrigFlow formulation with T = π/2:
-        αt = cos(t * π/2)
-        σt = sin(t * π/2)
-
-    Args:
-        t: Timestep tensor with values in [0, 1].
-
-    Returns:
-        Tuple of (alpha_t, sigma_t) tensors.
-    """
-    t_scaled = t * (math.pi / 2)
-    alpha_t = torch.cos(t_scaled)
-    sigma_t = torch.sin(t_scaled)
-    return alpha_t, sigma_t
 
 
 def interpolate_latents(
@@ -199,8 +185,7 @@ class ConsistencyModelLoss(nn.Module):
 
             # Compute derivative term: cos(t) * df/dt
             # Numerical approximation with small delta
-            delta = 0.01
-            t_plus = torch.clamp(t + delta, max=1.0)
+            t_plus = torch.clamp(t + CONSISTENCY_DERIVATIVE_DELTA, max=1.0)
             t_plus_expanded = t_plus.view(batch_size, 1, 1)
             t_plus_full = t_plus_expanded.expand(-1, seq_len, 1).reshape(-1, 1)
 
@@ -210,7 +195,7 @@ class ConsistencyModelLoss(nn.Module):
             # Derivative approximation
             alpha_t, _ = trigflow_schedule(t)
             cos_t = alpha_t.view(batch_size, 1, 1)
-            df_dt = (flow_pred_plus - flow_pred_sg) / delta
+            df_dt = (flow_pred_plus - flow_pred_sg) / CONSISTENCY_DERIVATIVE_DELTA
             derivative_term = cos_t * df_dt
 
             target = flow_pred_sg + derivative_term
