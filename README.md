@@ -114,6 +114,34 @@ At the moment, we do not support (but would love pull requests adding):
 We tried running this TTS model on the GPU but did not observe a speedup compared to CPU execution,
 notably because we use a batch size of 1 and a very small model.
 
+## Finetuning for Other Languages
+
+Pocket TTS can be finetuned on new languages or domains! We provide comprehensive training scripts and documentation:
+
+```bash
+# Quick start with finetuning
+pip install -r training/requirements.txt
+python training/finetune.py \
+  --data_dir data/french \
+  --language fr \
+  --num_epochs 10
+```
+
+**Documentation:**
+- [Training README](https://github.com/kyutai-labs/pocket-tts/tree/main/training/README.md) - Complete training guide
+- [Quick Start Guide](https://github.com/kyutai-labs/pocket-tts/tree/main/training/QUICKSTART.md) - Get started in 5 minutes
+- [Implementation Details](https://github.com/kyutai-labs/pocket-tts/tree/main/training/IMPLEMENTATION.md) - Technical overview
+
+**Features:**
+- Support for multiple languages (French, Spanish, German, etc.)
+- Data preparation scripts for Common Voice and custom datasets
+- Simple and advanced training modes
+- Distributed training support
+- Evaluation utilities
+- Example configurations
+
+Check the [training directory](https://github.com/kyutai-labs/pocket-tts/tree/main/training) for more details!
+
 ## Development and local setup
 
 We accept contributions! Feel free to open issues or pull requests on GitHub.
