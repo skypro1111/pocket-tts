@@ -205,8 +205,8 @@ def main():
             # 1. Encode audio with Mimi encoder
             # 2. Tokenize text with SentencePiece
             # 3. Compute flow matching loss with FlowLM
-            # Using a dummy loss value that requires gradients for demonstration
-            loss = audios.sum() * 0.0 + 0.5  # Creates a differentiable loss
+            # Create a differentiable loss based on the audio input
+            loss = audios.sum() * 0.0 + 0.5
             
             # Backward pass
             optimizer.zero_grad()

@@ -76,8 +76,12 @@ def prepare_common_voice_dataset(
                 # Create symlink to save space
                 try:
                     output_audio_path.symlink_to(audio_path.absolute())
-                except FileExistsError:
-                    pass  # Symlink already exists
+                except (FileExistsError, OSError) as e:
+                    # Symlink may already exist or filesystem doesn't support symlinks
+                    logger.debug(f"Could not create symlink for {audio_filename}: {e}")
+                    # Fall back to copying if symlink fails
+                    import shutil
+                    shutil.copy2(audio_path, output_audio_path)
             
             metadata.append({
                 "audio_path": audio_filename,
@@ -155,8 +159,12 @@ def prepare_custom_dataset(
             if not output_audio_path.exists():
                 try:
                     output_audio_path.symlink_to(audio_path.absolute())
-                except FileExistsError:
-                    pass  # Symlink already exists
+                except (FileExistsError, OSError) as e:
+                    # Symlink may already exist or filesystem doesn't support symlinks
+                    logger.debug(f"Could not create symlink for {filename}: {e}")
+                    # Fall back to copying if symlink fails
+                    import shutil
+                    shutil.copy2(audio_path, output_audio_path)
             
             metadata.append({
                 "audio_path": filename,

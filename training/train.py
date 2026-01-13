@@ -130,21 +130,14 @@ def compute_loss(model, batch, device):
     texts = batch["texts"]
     audio_lengths = batch["audio_lengths"].to(device)
     
-    # For demonstration, we compute a simple reconstruction loss
+    # For demonstration, we compute a simple differentiable placeholder loss
     # In actual training, this would involve:
     # - Encoding audio to latents with Mimi
     # - Computing flow matching loss with FlowLM
     # - Possibly add speaker embedding loss
     
-    # Placeholder loss computation
-    # TODO: Implement actual flow matching loss
-    # Using requires_grad=False since this is a placeholder
-    loss = torch.tensor(0.5, device=device, requires_grad=False)
-    
-    if batch_idx == 0:  # Log only once per epoch
-        logger.warning(
-            "Using placeholder loss! Implement actual flow matching loss for real training."
-        )
+    # Placeholder: create a differentiable loss based on audio input
+    loss = audios.sum() * 0.0 + 0.5  # Creates a differentiable scalar
     
     return loss
 
@@ -165,6 +158,12 @@ def train_epoch(
     
     loss_meter = AverageMeter()
     epoch_start = time.time()
+    
+    # Log warning once per epoch
+    if epoch == 0:
+        logger.warning(
+            "Using placeholder loss! Implement actual flow matching loss for real training."
+        )
     
     for batch_idx, batch in enumerate(train_loader):
         # Compute loss
