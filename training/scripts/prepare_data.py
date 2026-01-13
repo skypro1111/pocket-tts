@@ -3,6 +3,7 @@
 import argparse
 import json
 import logging
+import shutil
 from pathlib import Path
 from typing import Optional
 
@@ -80,7 +81,6 @@ def prepare_common_voice_dataset(
                     # Symlink may already exist or filesystem doesn't support symlinks
                     logger.debug(f"Could not create symlink for {audio_filename}: {e}")
                     # Fall back to copying if symlink fails
-                    import shutil
                     shutil.copy2(audio_path, output_audio_path)
             
             metadata.append({
@@ -163,7 +163,6 @@ def prepare_custom_dataset(
                     # Symlink may already exist or filesystem doesn't support symlinks
                     logger.debug(f"Could not create symlink for {filename}: {e}")
                     # Fall back to copying if symlink fails
-                    import shutil
                     shutil.copy2(audio_path, output_audio_path)
             
             metadata.append({

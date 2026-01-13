@@ -199,13 +199,15 @@ def main():
             # Move batch to device
             audios = batch["audios"].to(device)
             
-            # Placeholder loss computation
-            # TODO: Implement actual flow matching loss
-            # This should involve:
-            # 1. Encode audio with Mimi encoder
+            # IMPORTANT: This is a placeholder loss for testing the pipeline
+            # For actual training, you MUST implement:
+            # 1. Encode audio with Mimi encoder to get latent codes
             # 2. Tokenize text with SentencePiece
             # 3. Compute flow matching loss with FlowLM
-            # Create a differentiable loss based on the audio input
+            # 4. Add speaker embedding loss if using voice cloning
+            # 
+            # The constant loss below (0.5) will NOT train the model,
+            # but allows you to test the data loading and training infrastructure
             loss = audios.sum() * 0.0 + 0.5
             
             # Backward pass

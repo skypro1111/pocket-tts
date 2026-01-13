@@ -121,23 +121,24 @@ def parse_args():
 def compute_loss(model, batch, device):
     """Compute training loss for a batch.
     
-    This is a simplified loss computation. In practice, you would:
-    1. Encode audio with Mimi encoder
-    2. Pass text and encoded audio through FlowLM
-    3. Compute flow matching loss
+    **IMPORTANT**: This is an intentionally simple placeholder loss for demonstration.
+    For actual training, you MUST implement:
+    1. Encode audio with Mimi encoder to get latent codes
+    2. Pass text through SentencePiece tokenizer
+    3. Compute flow matching loss with FlowLM using proper noise scheduling
+    4. Add speaker embedding loss if using voice cloning
+    
+    The placeholder below creates a constant differentiable loss to allow
+    the training pipeline to run without errors, but it will NOT train the model.
     """
     audios = batch["audios"].to(device)
     texts = batch["texts"]
     audio_lengths = batch["audio_lengths"].to(device)
     
-    # For demonstration, we compute a simple differentiable placeholder loss
-    # In actual training, this would involve:
-    # - Encoding audio to latents with Mimi
-    # - Computing flow matching loss with FlowLM
-    # - Possibly add speaker embedding loss
-    
-    # Placeholder: create a differentiable loss based on audio input
-    loss = audios.sum() * 0.0 + 0.5  # Creates a differentiable scalar
+    # PLACEHOLDER: Creates a constant differentiable loss of 0.5
+    # This allows testing the training infrastructure without implementing
+    # the full flow matching loss computation
+    loss = audios.sum() * 0.0 + 0.5
     
     return loss
 
