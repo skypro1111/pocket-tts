@@ -312,29 +312,55 @@ Languages with abundant TTS datasets:
 - Use smaller `--max_audio_length` to reduce computation
 - Enable `--freeze_encoder` to reduce trainable parameters
 
-## Important Notes
+## Loss Functions
 
-⚠️ **Work in Progress**: The training scripts provided use placeholder loss functions. For production use, you need to implement the full flow matching loss computation including:
+The training scripts implement the CALM (Continuous Audio Language Models) loss functions from the paper:
 
-1. Audio encoding with Mimi encoder
-2. Text tokenization with SentencePiece
-3. Flow matching loss with proper noise scheduling
-4. Speaker embedding loss (for voice cloning)
+### Consistency Model Loss (CALMLoss)
 
-The scripts provide a framework and data processing pipeline, but the core training loss needs to be implemented based on the paper's methodology.
+The main training objective from Equation 3 of the paper:
+
+```
+LCALM(θ, ϕ, ψ) = Σs Et,ε [
+    exp(wψ(t)) ||Fϕ(x^s_t, t, Z^s) - F̄ϕ(x^s_t, t, Z^s) - cos(t)∂f̄ϕ/∂t||²₂
+    - wψ(t)
+]
+```
+
+Features:
+- **Adaptive Weighting**: Learnable wψ(t) function to balance loss at different timesteps
+- **TrigFlow Schedule**: Uses αt = cos(t·π/2), σt = sin(t·π/2) for noise interpolation
+- **EOS Prediction**: Binary cross-entropy loss for end-of-sequence detection
+
+### Flow Matching Loss (Alternative)
+
+A simpler alternative using the MAR-style diffusion objective:
+```
+L_diff(θ, ϕ) = Σs E_ε,t [||ε - εϕ(x^s_t, z^s, t)||²]
+```
+
+Use `--use_consistency=False` to switch to flow matching loss.
+
+### Noise Augmentation
+
+Following the paper, noise augmentation is applied to backbone input:
+- Controlled by `--use_noise_augmentation` flag
+- Maximum noise level set by `--max_noise_level` (default: 0.5)
+- Encourages the backbone to focus on coarse structure
 
 ## Contributing
 
 We welcome contributions to improve the training scripts! Areas for improvement:
 
-- Implement complete flow matching loss
 - Add evaluation metrics (MOS, WER, etc.)
 - Support for more data formats
 - Better logging and visualization
 - Hyperparameter tuning utilities
+- Multi-GPU optimization
 
 ## References
 
 - [Pocket TTS Paper](https://arxiv.org/abs/2509.06926)
 - [Mozilla Common Voice](https://commonvoice.mozilla.org/)
 - [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747)
+- [Consistency Models](https://arxiv.org/abs/2303.01469)

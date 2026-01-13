@@ -201,22 +201,44 @@ The training scripts are designed to work with Pocket TTS architecture:
 
 1. **Data Loading**: MultilingualTTSDataset loads and preprocesses audio
 2. **Collation**: TTSCollator batches samples with padding
-3. **Forward Pass**: Model generates predictions
-4. **Loss Computation**: Placeholder (needs implementation)
-5. **Backward Pass**: Gradients computed and clipped
-6. **Optimization**: AdamW optimizer updates weights
-7. **Checkpointing**: Periodic saving of model state
+3. **Audio Encoding**: Mimi encoder converts audio to continuous latents
+4. **Normalization**: EMA statistics track and normalize latent statistics
+5. **Noise Augmentation**: Optional noise injection to backbone input
+6. **Forward Pass**: Backbone transformer produces conditioning vectors
+7. **Loss Computation**: CALM consistency loss + EOS prediction loss
+8. **Backward Pass**: Gradients computed and clipped
+9. **Optimization**: AdamW optimizer updates weights (including adaptive weight parameters)
+10. **Checkpointing**: Periodic saving of model state
 
-### Important Notes
+### Loss Functions Implemented
 
-⚠️ **Loss Function**: The current implementation uses placeholder loss functions. For production use, you need to implement:
+The following loss functions from the CALM paper have been implemented in `training/utils/losses.py`:
 
-1. **Flow Matching Loss**: Based on Lagrangian Self Distillation (LSD)
-2. **Audio Encoding**: Encode audio to latents with Mimi encoder
-3. **Text Conditioning**: Process text with SentencePiece tokenizer
-4. **Speaker Embeddings**: Extract and use speaker embeddings
+1. **ConsistencyModelLoss**: Main consistency model objective (Equation 3)
+   - Uses TrigFlow schedule (αt = cos(t·π/2), σt = sin(t·π/2))
+   - Includes learnable adaptive weighting function wψ(t)
+   - Computes squared difference between flow predictions
 
-The framework provides the complete data loading, training loop, checkpointing, and evaluation pipeline. The core loss computation needs to be implemented based on the paper's methodology.
+2. **FlowMatchingLoss**: Alternative MAR-style diffusion objective
+   - Simpler than consistency loss but requires more inference steps
+   - Predicts velocity field from noisy latents
+
+3. **EOSLoss**: Binary cross-entropy for end-of-sequence prediction
+   - Helps model learn when to stop generating
+
+4. **CALMLoss**: Combined loss wrapper
+   - Integrates main loss (consistency or flow matching) with EOS loss
+   - Configurable loss weights
+
+### Noise Schedule Utilities
+
+Implemented in `training/utils/noise_schedule.py`:
+
+- **trigflow_schedule**: Computes TrigFlow noise coefficients
+- **add_noise_to_latents**: Interpolates between clean and noisy latents
+- **BackboneNoiseAugmentation**: Applies noise to backbone input
+- **GaussianTemperatureSampler**: Temperature-scaled sampling for inference
+- **EMAStatistics**: Exponential moving average for latent normalization
 
 ## Supported Languages
 
@@ -280,6 +302,12 @@ python training/train.py \
 - Module structure is properly organized
 - Documentation is comprehensive
 - Example configurations are provided
+- **Loss functions fully implemented and tested** (27 unit tests pass)
+- Consistency model loss (Equation 3 from paper)
+- Flow matching loss (alternative objective)
+- EOS prediction loss
+- Noise augmentation utilities
+- EMA statistics tracking
 
 ⏸️ **Pending (requires audio data):**
 - End-to-end training test
