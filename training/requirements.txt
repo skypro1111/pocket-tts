@@ -1,0 +1,18 @@
+# Additional dependencies for training Pocket TTS
+
+# Audio processing
+torchaudio>=2.0.0
+
+# Training utilities
+tensorboard>=2.10.0
+tqdm>=4.60.0
+pyyaml>=6.0
+
+# Data processing
+soundfile>=0.12.0
+
+# Optional: For distributed training
+# torch.distributed (comes with PyTorch)
+
+# Optional: For mixed precision training
+# apex (requires separate installation)
